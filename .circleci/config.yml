@@ -1,0 +1,90 @@
+defaults: &jdk
+  docker:
+    - image: circleci/openjdk:8-jdk
+
+defaults: &docker
+  docker:
+    - image: quay.io/paulpop/docker-compose
+      environment:
+        APP_NAME: java-spring-service
+        IMAGE_NAME: quay.io/paulpop/java-spring-service
+
+version: 2
+jobs:
+  build:
+    <<: *jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependencies-{{ checksum "pom.xml" }}
+      - run:
+          name: Install dependencies and build deployable jar
+          command: mvn install -DskipTests=true
+      - save_cache:
+          key: dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/java-spring-service.jar
+
+  test:
+    <<: *jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependencies-{{ checksum "pom.xml" }}
+      - run:
+          name: Run all tests and upload to Codecov
+          command: |
+            mvn verify
+              bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+      - save_cache:
+          key: dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+      - store_test_results:
+          path: target/surefire-reports
+      - store_test_results:
+          path: target/failsafe-reports
+
+  docker:
+    <<: *docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build container with the git commit sha version and latest version
+          command: docker build -t $IMAGE_NAME:$CIRCLE_SHA1 -t $IMAGE_NAME .
+      - run:
+          name: Start container and verify it's healthy
+          command: |
+            set -x
+            docker-compose up -d
+            docker run --network container:$APP_NAME mwendler/wget -qO- \
+              --retry-connrefused --tries=10 --waitretry 6 http://localhost:8080/health
+      - run:
+          name: Push image to Quay
+          command: |
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+                docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD quay.io
+                docker push $IMAGE_NAME:$CIRCLE_SHA1
+                docker push $IMAGE_NAME
+            else
+                echo Skipping this step as we are not on 'master' branch
+            fi
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - test
+      - docker:
+          context: default
+          requires:
+            - build
+            - test
