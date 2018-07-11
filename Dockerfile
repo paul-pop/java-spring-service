@@ -1,4 +1,6 @@
-FROM quay.io/paulpop/jre-alpine
+FROM quay.io/paulpop/jre-alpine:latest
+
+MAINTAINER Paul Pop <paulpop88@gmail.com>
 
 ENV ENVIRONMENT default
 ENV ADMIN_PASSWORD admin

@@ -47,7 +47,7 @@ public class HttpExceptionHandler {
                 }
             })
             .collect(Collectors.toList());
-        return error(ex, BAD_REQUEST, errors);
+        return error(BAD_REQUEST, errors);
     }
 
     /**
@@ -59,7 +59,7 @@ public class HttpExceptionHandler {
         List<String> errors = ex.getConstraintViolations().stream()
             .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
-        return error(ex, BAD_REQUEST, errors);
+        return error(BAD_REQUEST, errors);
     }
 
     /**
@@ -86,7 +86,7 @@ public class HttpExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseBody
     public ResponseEntity<HttpExceptionResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        return singleError(ex, BAD_REQUEST, String.format("Parameter '%s' does not accept value '%s'", ex.getName(), ex.getValue()));
+        return singleError(BAD_REQUEST, String.format("Parameter '%s' does not accept value '%s'", ex.getName(), ex.getValue()));
     }
 
     /**
@@ -113,8 +113,8 @@ public class HttpExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     @Order(Ordered.LOWEST_PRECEDENCE)
-    public ResponseEntity<HttpExceptionResponse> handleException(Exception ex) {
-        return genericError(ex, INTERNAL_SERVER_ERROR);
+    public ResponseEntity<HttpExceptionResponse> handleException() {
+        return genericError(INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -125,41 +125,38 @@ public class HttpExceptionHandler {
      * @return a response entity containing a message from the exception and given status
      */
     private ResponseEntity<HttpExceptionResponse> standardError(final Exception ex, final HttpStatus status) {
-        return singleError(ex, status, ex.getMessage());
+        return singleError(status, ex.getMessage());
     }
 
     /**
      * Returns a http exception response entity where the error message is generic
      *
-     * @param ex     the exception the exception
      * @param status the status
      * @return a response entity containing a generic error message and given status
      */
-    private ResponseEntity<HttpExceptionResponse> genericError(final Exception ex, final HttpStatus status) {
-        return singleError(ex, status, GENERIC_ERROR_MESSAGE);
+    private ResponseEntity<HttpExceptionResponse> genericError(final HttpStatus status) {
+        return singleError(status, GENERIC_ERROR_MESSAGE);
     }
 
     /**
      * Returns a http exception response entity where the error message is set to that provided
      *
-     * @param ex      the exception
      * @param status  the status
      * @param message the message to set in the response
      * @return a response entity containing the given message and given status
      */
-    private ResponseEntity<HttpExceptionResponse> singleError(final Exception ex, final HttpStatus status, final String message) {
-        return error(ex, status, Collections.singletonList(message));
+    private ResponseEntity<HttpExceptionResponse> singleError(final HttpStatus status, final String message) {
+        return error(status, Collections.singletonList(message));
     }
 
     /**
      * Logs the exception and returns a response entity with the given status and errors
      *
-     * @param ex     the exception to log
      * @param status the status to send in the response
      * @param errors the errors to put in the response
      * @return a response entity
      */
-    private ResponseEntity<HttpExceptionResponse> error(final Exception ex, final HttpStatus status, final List<String> errors) {
+    private ResponseEntity<HttpExceptionResponse> error(final HttpStatus status, final List<String> errors) {
         return buildResponse(status, errors);
     }
 
