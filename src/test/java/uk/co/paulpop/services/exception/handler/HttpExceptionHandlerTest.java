@@ -195,31 +195,11 @@ public class HttpExceptionHandlerTest {
     }
 
     /**
-     * Tests for {@link HttpExceptionHandler#handleException(Exception)}
+     * Tests for {@link HttpExceptionHandler#handleException()}
      */
     @Test
     public void handleParentException_shouldReturnCorrectResponse() {
-        ResponseEntity<HttpExceptionResponse> result = handler.handleException(new Exception("Custom message"));
-
-        assertThat(result.getStatusCode(), is(equalTo(HttpStatus.INTERNAL_SERVER_ERROR)));
-        assertThat(result.getStatusCodeValue(), is(equalTo(500)));
-        assertThat(result.getBody().getMessage(), is(equalTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())));
-        assertThat(result.getBody().getErrors(), hasItems(GENERIC_ERROR_MESSAGE));
-    }
-
-    @Test
-    public void handleRuntimeException_shouldReturnCorrectResponse() {
-        ResponseEntity<HttpExceptionResponse> result = handler.handleException(new RuntimeException("Custom message"));
-
-        assertThat(result.getStatusCode(), is(equalTo(HttpStatus.INTERNAL_SERVER_ERROR)));
-        assertThat(result.getStatusCodeValue(), is(equalTo(500)));
-        assertThat(result.getBody().getMessage(), is(equalTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())));
-        assertThat(result.getBody().getErrors(), hasItems(GENERIC_ERROR_MESSAGE));
-    }
-
-    @Test
-    public void handleIllegalArgumentException_shouldReturnCorrectResponse() {
-        ResponseEntity<HttpExceptionResponse> result = handler.handleException(new IllegalArgumentException("Custom message"));
+        ResponseEntity<HttpExceptionResponse> result = handler.handleException();
 
         assertThat(result.getStatusCode(), is(equalTo(HttpStatus.INTERNAL_SERVER_ERROR)));
         assertThat(result.getStatusCodeValue(), is(equalTo(500)));
@@ -247,7 +227,5 @@ public class HttpExceptionHandlerTest {
         assertThat(result.getBody().getErrors(), hasItems(MESSAGE));
     }
 
-    private enum StubEnum {
-        ENUM
-    }
+    private enum StubEnum {}
 }
