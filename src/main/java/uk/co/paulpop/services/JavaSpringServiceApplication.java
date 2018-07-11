@@ -13,7 +13,7 @@ import java.util.TimeZone;
 public class JavaSpringServiceApplication {
 
     @PostConstruct
-    private void started() {
+    protected void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
