@@ -2,7 +2,7 @@
 
 This is a skeleton service for a Java 8 app using Spring Boot 1.x, Swagger
 
-[![CircleCI](https://circleci.com/gh/paul-pop/jre-alpine.svg?style=svg)](https://circleci.com/gh/paul-pop/jre-alpine)
+[![CircleCI](https://circleci.com/gh/paul-pop/java-spring-service.svg?style=svg)](https://circleci.com/gh/paul-pop/java-spring-service)
 [![codecov](https://codecov.io/gh/paul-pop/java-spring-service/branch/master/graph/badge.svg)](https://codecov.io/gh/paul-pop/java-spring-service)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/eb80215eca8745efa74b60bca0e2a5c5)](https://www.codacy.com/app/paul-pop/java-spring-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paul-pop/java-spring-service&amp;utm_campaign=Badge_Grade)
 
