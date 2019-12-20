@@ -28,7 +28,7 @@
 
         <logback.access.version>2.7.1</logback.access.version>
         <lombok.version>1.16.22</lombok.version>
-        <spring.boot.version>1.5.14.RELEASE</spring.boot.version>
+        <spring.boot.version>2.1.11.RELEASE</spring.boot.version>
         <swagger.version>2.9.2</swagger.version>
     </properties>
 
